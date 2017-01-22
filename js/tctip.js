@@ -118,7 +118,8 @@ isSupportCanvas	: function(){
   * * @return {Boolean}
 * */
 isMouseLeaveOrEnter	: function(e, target) {
-						  if (e.type != 'mouseout' && e.type != 'mouseover') return false;
+						  if(!e) return false
+						  if (e.type != 'mouseout' && e.type != 'mouseover' && e.type != 'click') return false;
 						  var reltg = e.relatedTarget ? e.relatedTarget : e.type == 'mouseout' ? e.toElement : e.fromElement;
 						  while (reltg && reltg != target)
 							  reltg = reltg.parentNode;
@@ -248,21 +249,23 @@ var tctip =  window.tctip || {
 							this.myRewards  = tctipUtil.createElement({
 								id:			"myRewards", 
 								className: "myRewards",
-								style:"top:"+this.myConfig.siderTop+";",
+								style:"top:"+this.myConfig.siderTop+";"});/*,
 								onmouseover : function(){
 													tctip.showTctip(this);
 												},
 								onmouseout	: function(){
 													tctip.hideTctip(this);
 												}
-								});
+								});*/
 							this.generateLeftBtn();
 							this.generateMyRewardsMain();
 						},
 	generateLeftBtn:	function(){
 							var obj = {className: "btn-myRewards", href: "javascript:;"};
 							obj['style'] = "margin-top:"+tctip.myConfig.siderTextTop+";";
+							obj['onmouseover'] = function(){ tctip.showTctip(this);};
 							this.myRewardsBtn = tctipUtil.createElement(obj, 'a', this.myRewards);
+
 							var obj = {className: "sider-text"};
 							obj["style"]="background-color:"+tctip.myConfig.siderBgcolor;
 							obj[tctipUtil.getTextKey()] = tctip.myConfig.siderText;
@@ -273,10 +276,11 @@ var tctip =  window.tctip || {
 	 * 显示打赏插件
 	 **/
 	showTctip:			function(target){
-							 var e = tctipUtil.currentEvent();
-							 if(tctipUtil.isMouseLeaveOrEnter(e, target)){
-								 tctipUtil.animate({width:"240px"}, tctip.myRewards, 200);
-							 }
+							var e = tctipUtil.currentEvent();
+							if(tctipUtil.isMouseLeaveOrEnter(e, target)){
+								tctipUtil.animate({width:"240px"}, tctip.myRewards, 200);
+								tctipUtil.animate({display:"none"}, tctip.myRewardsBtn, 200);
+							}
 						},
 	/***
 	 * 隐藏打赏插件
@@ -285,11 +289,20 @@ var tctip =  window.tctip || {
 							var e = tctipUtil.currentEvent();
 							if(tctipUtil.isMouseLeaveOrEnter(e, target)){
 								tctipUtil.animate({width:"0px"}, tctip.myRewards, 200);
+								tctipUtil.animate({display:"block"}, tctip.myRewardsBtn, 200);
 							}
 						},
 
 	generateMyRewardsMain:	function(){
-							this.myRewardsMain = tctipUtil.createElement({className: "myRewards-main"}, 'div', this.myRewards);
+							this.myRewardsMain = tctipUtil.createElement(
+								{className: "myRewards-main",onmouseout:function(){tctip.hideTctip(this);}},
+								'div', this.myRewards);
+							var main = this.myRewardsMain;
+							var obj = {className: "sider-close", title:"收起", onclick:function(){tctip.hideTctip(main);}};
+							obj[tctipUtil.getTextKey()] = ">>";
+							obj['href'] = "javascript:;";
+							tctipUtil.createElement(obj, 'a', this.myRewardsMain);
+
 							var obj = {className: "myR-h"};
 							obj[tctipUtil.getTextKey()] = tctip.myConfig.headText;
 							tctipUtil.createElement(obj, 'h1', this.myRewardsMain);
