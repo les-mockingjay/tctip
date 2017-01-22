@@ -1,6 +1,6 @@
 tctip
 ========
-![image](https://github.com/HaddyYang/tctip/show.jpg)
+![image](https://github.com/HaddyYang/tctip/blob/master/show.jpg)
 
 谢谢原作者的代码，很方便。为了结合我的项目。
 对原来作者项目调整如下：
